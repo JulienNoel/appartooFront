@@ -1,0 +1,35 @@
+.login-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../images/schtroump.jpg');
+    background-size: cover;
+}
+
+.login-form {
+    min-width: 320px;
+    width: 33vw;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    background: rgba(26, 117, 200, 0.33);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7.5px);
+    -webkit-backdrop-filter: blur(7.5px);
+    border: 1px solid rgba(26, 117, 200, 0.13);
+
+}
+
+.login-form p{
+    cursor: pointer;
+    color: rgb(9, 67, 125);
+    font-weight: 400;
+    text-decoration: underline;
+    text-align: center;
+}
