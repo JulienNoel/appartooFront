@@ -5,9 +5,9 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import RoleCard from "./roleCard";
-import { role } from "../data/roleData";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 
 const style = {
   position: "absolute",
@@ -20,62 +20,97 @@ const style = {
   boxShadow: 24,
 };
 
-function AmisColumn() {
+function AmisColumn({ token }) {
   const [dataList, setDataList] = useState([]);
   const [open, setOpen] = useState(false);
-  const [count, setCount] = useState(0)
-  const [friendList, setFriendList] = useState([])
+  const [count, setCount] = useState(0);
+  const [friendList, setFriendList] = useState([]);
+  const [error, setError] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    async function loadFriends() {
-      const response = await fetch("http://localhost:3000/addfriend");
+    async function loadFriendsFromDb() {
+      const response = await fetch(`/findfriend/${token}`);
       const rawResponse = await response.json();
       if (response) {
-        setDataList(rawResponse.result);
+        setDataList(rawResponse?.result);
+        setFriendList(rawResponse?.friend)
       }
     }
-    loadFriends();
+    loadFriendsFromDb();
   }, []);
 
-  useEffect(() =>{
+  async function updateFriends() {
+    const response = await fetch("/updatefriend", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `token=${token}&name=${dataList[count]?.name}&img=${dataList[count]?.img}`,
+    });
 
-    async function updateFriends() {
+    const rawResponse = response.json();
 
-    }
-    updateFriends()
+    !rawResponse ? setError(true) : setError(false);
+  }
 
-  },[])
+  async function deleteFriend(friend) {
+    const response = await fetch("/deletefriend", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `token=${token}&name=${friend?.name}&img=${friend?.img}`,
+    });
 
+    const rawResponse = response.json();
+
+    !rawResponse ? setError(true) : setError(false);
+  }
+
+  function removeFromList(array, data){
+    return array.filter((el) => el.img !== data.img)
+
+  }
 
   function addFriend() {
-    const addToList = {name: role[count]?.role, img: role[count]?.img}
-    setFriendList([...friendList, addToList])
-    handleClose()
-
+    if (dataList) {
+    const addToList = {
+      name: dataList[count]?.name,
+      img: dataList[count]?.img,
+    };
+    setFriendList([...friendList, addToList]);
+    setDataList(removeFromList(dataList, addToList))
+    updateFriends();
+    handleClose();
+  }
   }
 
-  function removeFriend(friend){
-    const newFriendList = friendList.filter(el => el.img !== friend.img)
-    setFriendList(newFriendList)
-
+  function removeFriend(friend) {
+    
+    setFriendList(removeFromList(friendList, friend));
+    setDataList([...dataList, friend])
+    deleteFriend(friend);
   }
-  console.log(friendList)
 
-count < 0 && setCount(role.length)
-count > role.length-1 && setCount(0)
-
-
+  useEffect(() => {
+    count < 0 && setCount(dataList.length-1);
+    count > dataList.length - 1 && setCount(0);
+  }, [count]);
 
   return (
     <div className="role-ami-column">
       <h2>Mes Amis</h2>
+      <div className="list-amis">
       {friendList.map((el) => {
-        return <FriendCard name={el.name} img={el.img} key={el.img} removeFriend={removeFriend}/>
+        return (
+          <FriendCard
+            name={el.name}
+            img={el.img}
+            key={el.img}
+            removeFriend={removeFriend}
+          />
+        );
       })}
-      
+      </div>
       <div>
         <Button
           onClick={handleOpen}
@@ -92,22 +127,32 @@ count > role.length-1 && setCount(0)
         >
           <Box sx={style}>
             <div className="box-modal">
-              <div className='display-friend-card'>
+              <div className="display-friend-card">
                 <div className="friend-card-icon">
-                  <ArrowBackIosIcon fontSize="large" onClick={()=> setCount(count-1)}/>
+                  <ArrowBackIosIcon
+                    fontSize="large"
+                    onClick={() => setCount(count - 1)}
+                  />
                 </div>
                 <div className="friend-card">
                   <RoleCard
-                    role={role[count]?.role}
-                    img={role[count]?.img}
+                    role={dataList[count]?.name}
+                    img={dataList[count]?.img}
                     noHover={true}
                   />
-                  <Button sx={{ width: 180 }} variant="contained" onClick={addFriend}>
+                  <Button
+                    sx={{ width: 180 }}
+                    variant="contained"
+                    onClick={addFriend}
+                  >
                     Ajouter
                   </Button>
                 </div>
                 <div className="friend-card-icon">
-                  <ArrowForwardIosIcon fontSize="large" onClick={()=> setCount(count+1)}/>
+                  <ArrowForwardIosIcon
+                    fontSize="large"
+                    onClick={() => setCount(count + 1)}
+                  />
                 </div>
               </div>
             </div>
@@ -118,19 +163,18 @@ count > role.length-1 && setCount(0)
   );
 }
 
-function FriendCard({name, img, removeFriend}) {
-
+function FriendCard({ name, img, removeFriend }) {
   function handleClick() {
-    removeFriend({name: name, img: img})
+    removeFriend({ name: name, img: img });
   }
 
-  return(
+  return (
     <div className="amis-card">
-        <Avatar alt={name} src={img} />
-        <p>{name}</p>
-        <HighlightOffIcon color="error" fontSize="large" onClick={handleClick}/>
-      </div>
-  )
+      <Avatar alt={name} src={img} />
+      <p>{name}</p>
+      <HighlightOffIcon className='delete-icon' color='error' fontSize="large" onClick={handleClick} />
+    </div>
+  );
 }
 
 export default AmisColumn;

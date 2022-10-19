@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import "../styles/login.css";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import { redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import UserContext from "../context/contextUser";
 
 function Login() {
   const [userName, setUserName] = useState("");
@@ -14,10 +15,19 @@ function Login() {
   const [error, setError] = useState(null);
   const [userExist, setUserExist] = useState(false)
 
-  const tokenExist = window.localStorage.getItem('schtroumpfToken')
+  const [state, dispatch] = useContext(UserContext);
+  
+
+
+
+  useEffect(()=> {
+    isLogin ? setFetchUrl("login") : setFetchUrl("register");
+  },[isLogin])
+  
+  
 
   async function handleSubmit() {
-    isLogin ? setFetchUrl("login") : setFetchUrl("register");
+    
     const data = await fetch(`/${fetchUrl}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -26,17 +36,19 @@ function Login() {
 
     const body = await data.json();
     if (body.result) {
-      window.localStorage.setItem('schtroumpfToken', body.user.token)
+      
       setUserExist(true)
+      dispatch({type: 'addUser', user: body.user})
     } else {
       setError(body.error)
       
     }
+    
   }
+  
 
-
-  if(userExist || tokenExist){
-    return redirect('/profil')
+  if(userExist){
+    return <Navigate to='/profil' />
   }
 
   return (
@@ -44,7 +56,7 @@ function Login() {
       <div className="login-form">
         <TextField
           sx={{ width: 280 }}
-          id="outlined-basic"
+          id="name"
           label="Mail"
           variant="outlined"
           onChange={(e) => setUserName(e.target.value)}
@@ -52,8 +64,9 @@ function Login() {
         />
         <TextField
           sx={{ width: 280 }}
-          id="outlined-basic"
+          id="password"
           label="Password"
+          type="password"
           variant="outlined"
           onChange={(e) => setPassword(e.target.value)}
           value={password}
