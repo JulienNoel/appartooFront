@@ -15,7 +15,7 @@ function Login() {
   const [error, setError] = useState(null);
   const [userExist, setUserExist] = useState(false)
 
-  const [state, dispatch] = useContext(UserContext);
+  const [, dispatch] = useContext(UserContext);
   
 
 

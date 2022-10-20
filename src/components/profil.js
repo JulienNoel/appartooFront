@@ -7,7 +7,7 @@ import UserContext from "../context/contextUser";
 import { useNavigate } from "react-router-dom";
 
 function Profil() {
-  const [state, dispatch] = useContext(UserContext);
+  const [state,] = useContext(UserContext);
   const navigate = useNavigate();
 
 
