@@ -32,7 +32,7 @@ function AmisColumn({ token }) {
 
   useEffect(() => {
     async function loadFriendsFromDb() {
-      const response = await fetch(`/findfriend/${token}`);
+      const response = await fetch(`https://mysterious-sands-93126.herokuapp.com/findfriend/${token}`);
       const rawResponse = await response.json();
       if (response) {
         setDataList(rawResponse?.result);
@@ -43,7 +43,7 @@ function AmisColumn({ token }) {
   }, []);
 
   async function updateFriends() {
-    const response = await fetch("/updatefriend", {
+    const response = await fetch("https://mysterious-sands-93126.herokuapp.com/updatefriend", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `token=${token}&name=${dataList[count]?.name}&img=${dataList[count]?.img}`,
@@ -55,7 +55,7 @@ function AmisColumn({ token }) {
   }
 
   async function deleteFriend(friend) {
-    const response = await fetch("/deletefriend", {
+    const response = await fetch("https://mysterious-sands-93126.herokuapp.com/deletefriend", {
       method: "DELETE",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `token=${token}&name=${friend?.name}&img=${friend?.img}`,

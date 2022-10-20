@@ -44,7 +44,7 @@ function RoleColumn({ token, roleUser }) {
   
 
   async function updateRole() {
-    const response = await fetch("/updaterole", {
+    const response = await fetch("https://mysterious-sands-93126.herokuapp.com/updaterole", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `token=${token}&role=${isSelected?.role}`,

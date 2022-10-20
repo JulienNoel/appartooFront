@@ -28,7 +28,7 @@ function Login() {
 
   async function handleSubmit() {
     
-    const data = await fetch(`/${fetchUrl}`, {
+    const data = await fetch(`https://mysterious-sands-93126.herokuapp.com/${fetchUrl}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `user=${userName}&password=${password}`,
