@@ -100,7 +100,7 @@ function AmisColumn({ token }) {
     el === "-" && setCount(count - 1);
   }
 
-  console.log("test", count);
+  
 
   return (
     <div className="role-ami-column">
