@@ -6,17 +6,19 @@ import Modal from "@mui/material/Modal";
 import RoleCard from "./roleCard";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-import { listItemSecondaryActionClasses } from "@mui/material";
+
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "80vw",
+  width: "95vw",
   height: "50vh",
   bgcolor: "white",
   boxShadow: 24,
+  minWidth: 340,
+  
 };
 
 function RoleColumn({ token, roleUser }) {

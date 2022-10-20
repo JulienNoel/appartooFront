@@ -8,7 +8,6 @@ import RoleCard from "./roleCard";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-
 const style = {
   position: "absolute",
   top: "50%",
@@ -18,6 +17,7 @@ const style = {
   height: "66vh",
   bgcolor: "white",
   boxShadow: 24,
+  minWidth: 340,
 };
 
 function AmisColumn({ token }) {
@@ -36,7 +36,7 @@ function AmisColumn({ token }) {
       const rawResponse = await response.json();
       if (response) {
         setDataList(rawResponse?.result);
-        setFriendList(rawResponse?.friend)
+        setFriendList(rawResponse?.friend);
       }
     }
     loadFriendsFromDb();
@@ -66,50 +66,56 @@ function AmisColumn({ token }) {
     !rawResponse ? setError(true) : setError(false);
   }
 
-  function removeFromList(array, data){
-    return array.filter((el) => el.img !== data.img)
-
+  function removeFromList(array, data) {
+    return array.filter((el) => el.img !== data.img);
   }
 
   function addFriend() {
-    if (dataList) {
     const addToList = {
       name: dataList[count]?.name,
       img: dataList[count]?.img,
     };
     setFriendList([...friendList, addToList]);
-    setDataList(removeFromList(dataList, addToList))
+    setDataList(removeFromList(dataList, addToList));
     updateFriends();
     handleClose();
   }
-  }
 
   function removeFriend(friend) {
-    
     setFriendList(removeFromList(friendList, friend));
-    setDataList([...dataList, friend])
+    setDataList([...dataList, friend]);
     deleteFriend(friend);
   }
 
-  useEffect(() => {
-    count < 0 && setCount(dataList.length-1);
-    count > dataList.length - 1 && setCount(0);
-  }, [count]);
+  if (dataList.length > 0) {
+    if (count < 0) {
+      setCount(dataList.length - 1);
+    } else if (count > dataList.length - 1) {
+      setCount(0);
+    }
+  }
+
+  function changeCard(el) {
+    el === "+" && setCount(count + 1);
+    el === "-" && setCount(count - 1);
+  }
+
+  console.log("test", count);
 
   return (
     <div className="role-ami-column">
       <h2>Mes Amis</h2>
       <div className="list-amis">
-      {friendList.map((el) => {
-        return (
-          <FriendCard
-            name={el.name}
-            img={el.img}
-            key={el.img}
-            removeFriend={removeFriend}
-          />
-        );
-      })}
+        {friendList.map((el) => {
+          return (
+            <FriendCard
+              name={el.name}
+              img={el.img}
+              key={el.img}
+              removeFriend={removeFriend}
+            />
+          );
+        })}
       </div>
       <div>
         <Button
@@ -126,32 +132,43 @@ function AmisColumn({ token }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="box-modal">
+            <div>
               <div className="display-friend-card">
                 <div className="friend-card-icon">
                   <ArrowBackIosIcon
                     fontSize="large"
-                    onClick={() => setCount(count - 1)}
+                    onClick={() => {
+                      changeCard("-");
+                    }}
                   />
                 </div>
-                <div className="friend-card">
-                  <RoleCard
-                    role={dataList[count]?.name}
-                    img={dataList[count]?.img}
-                    noHover={true}
-                  />
-                  <Button
-                    sx={{ width: 180 }}
-                    variant="contained"
-                    onClick={addFriend}
-                  >
-                    Ajouter
-                  </Button>
-                </div>
+                {dataList.length > 0 ? (
+                  <div className="friend-card">
+                    <RoleCard
+                      role={dataList[count]?.name}
+                      img={dataList[count]?.img}
+                      noHover={true}
+                    />
+                    <Button
+                      sx={{ width: 180 }}
+                      variant="contained"
+                      onClick={addFriend}
+                    >
+                      Ajouter
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="friend-card">
+                    <p style={{color: 'black',textAlign: 'center'}}>La liste est vide</p>
+                  </div>
+                )}
+
                 <div className="friend-card-icon">
                   <ArrowForwardIosIcon
                     fontSize="large"
-                    onClick={() => setCount(count + 1)}
+                    onClick={() => {
+                      changeCard("+");
+                    }}
                   />
                 </div>
               </div>
@@ -172,7 +189,12 @@ function FriendCard({ name, img, removeFriend }) {
     <div className="amis-card">
       <Avatar alt={name} src={img} />
       <p>{name}</p>
-      <HighlightOffIcon className='delete-icon' color='error' fontSize="large" onClick={handleClick} />
+      <HighlightOffIcon
+        className="delete-icon"
+        color="error"
+        fontSize="large"
+        onClick={handleClick}
+      />
     </div>
   );
 }

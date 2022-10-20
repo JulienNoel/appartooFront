@@ -62,8 +62,10 @@
 .display-role {
     display: flex;
     width: 100%;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+    
 }
 
 .role-ami-column {
@@ -73,7 +75,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    
+    min-width: 300px;
 }
 
 .role-ami-column h2, p {
@@ -99,11 +101,13 @@
     border: 1px solid white;
     border-radius: 10px;
     margin-bottom: 10px;
+    min-width: 270px;
+   
 }
 
 .deconnection-btn {
     display: flex;
-    width: 100%;    
+    width: 100vw;    
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-end;
@@ -157,7 +161,25 @@
 
 .delete-icon:hover{
     transform: scale(1.1);
-    opacity: 1; 
-    
+    opacity: 1;     
 
 }
+
+@media (max-width: 1080px) {
+    .profil-container {
+        height: auto
+    }
+
+    .profil-card {
+        flex-direction: column;
+        align-items: center;        
+        height: auto;
+        margin-bottom: 50px;
+    }
+    .display-role {
+        overflow: auto;
+        justify-content: flex-start;
+    }
+}
+
+
