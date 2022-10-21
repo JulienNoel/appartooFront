@@ -10,9 +10,9 @@
 }
 
 .login-form {
-    min-width: 320px;
-    width: 33vw;
-    height: 50vh;
+    min-width: 330px;
+    width: 30vw;
+    height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
