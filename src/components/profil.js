@@ -7,13 +7,13 @@ import UserContext from "../context/contextUser";
 import { useNavigate } from "react-router-dom";
 
 function Profil() {
-  const [state,] = useContext(UserContext);
+  const [state, dispatch] = useContext(UserContext);
   const navigate = useNavigate();
 
 
 
   function deconnection() {
-    
+    dispatch({type: 'addUser', user: ''})
     navigate("/");
   }
 
