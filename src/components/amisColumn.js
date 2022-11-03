@@ -7,6 +7,7 @@ import Modal from "@mui/material/Modal";
 import RoleCard from "./roleCard";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import TextField from "@mui/material/TextField";
 
 const style = {
   position: "absolute",
@@ -26,13 +27,17 @@ function AmisColumn({ token }) {
   const [count, setCount] = useState(0);
   const [friendList, setFriendList] = useState([]);
   const [error, setError] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [displayForm, setdisplayForm] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
     async function loadFriendsFromDb() {
-      const response = await fetch(`https://mysterious-sands-93126.herokuapp.com/findfriend/${token}`);
+      const response = await fetch(
+        `https://mysterious-sands-93126.herokuapp.com/findfriend/${token}`
+      );
       const rawResponse = await response.json();
       if (response) {
         setDataList(rawResponse?.result);
@@ -40,14 +45,17 @@ function AmisColumn({ token }) {
       }
     }
     loadFriendsFromDb();
-  }, []);
+  }, [registerFriend]);
 
   async function updateFriends() {
-    const response = await fetch("https://mysterious-sands-93126.herokuapp.com/updatefriend", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `token=${token}&name=${dataList[count]?.name}&img=${dataList[count]?.img}`,
-    });
+    const response = await fetch(
+      "https://mysterious-sands-93126.herokuapp.com/updatefriend",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `token=${token}&name=${dataList[count]?.name}&img=${dataList[count]?.img}`,
+      }
+    );
 
     const rawResponse = response.json();
 
@@ -55,11 +63,14 @@ function AmisColumn({ token }) {
   }
 
   async function deleteFriend(friend) {
-    const response = await fetch("https://mysterious-sands-93126.herokuapp.com/deletefriend", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `token=${token}&name=${friend?.name}&img=${friend?.img}`,
-    });
+    const response = await fetch(
+      "https://mysterious-sands-93126.herokuapp.com/deletefriend",
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `token=${token}&name=${friend?.name}&img=${friend?.img}`,
+      }
+    );
 
     const rawResponse = response.json();
 
@@ -100,7 +111,18 @@ function AmisColumn({ token }) {
     el === "-" && setCount(count - 1);
   }
 
-  
+  async function registerFriend() {    
+
+    if (userName) {
+      await fetch(`https://mysterious-sands-93126.herokuapp.com/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `user=${userName}&password=123456`,
+    });
+    setUserName('')
+    }
+    setdisplayForm(false);
+  }
 
   return (
     <div className="role-ami-column">
@@ -156,10 +178,36 @@ function AmisColumn({ token }) {
                     >
                       Ajouter
                     </Button>
+                    {displayForm? <><TextField
+                          sx={{ width: 280, marginTop: 5 }}
+                          id="name"
+                          label="Name"
+                          variant="outlined"
+                          onChange={(e) => setUserName(e.target.value)}
+                          value={userName}
+                        />
+                        <Button
+                          sx={{ width: 100, marginTop: 2 }}
+                          variant="contained"
+                          onClick={registerFriend}
+                        >
+                          OK
+                        </Button></>:<Button
+                          sx={{ width: 180, marginTop: 2 }}
+                          variant="contained"
+                          onClick={() => setdisplayForm(true)}
+                        >
+                          Register Ami
+                        </Button>}
+                        
+                      
+                    
                   </div>
                 ) : (
                   <div className="friend-card">
-                    <p style={{color: 'black',textAlign: 'center'}}>La liste est vide</p>
+                    <p style={{ color: "black", textAlign: "center" }}>
+                      La liste est vide
+                    </p>
                   </div>
                 )}
 
